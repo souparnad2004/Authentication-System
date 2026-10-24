@@ -1,0 +1,12 @@
+{
+  "name": "@repo/config",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "extends": "@repo/tsconfig/node.json",
+  "types": ["node"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "dist"
+  },
+  "include": ["src/**/*.ts"]
+}
