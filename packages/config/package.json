@@ -2,11 +2,22 @@
   "name": "@repo/config",
   "type": "module",
   "private": true,
+  "exports": {
+    "./env": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/env/index.ts --format esm --dts --sourcemap --clean --out-dir dist"
+  },
   "dependencies": {
     "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@types/node": "catalog:"
+    "@types/node": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
   }
 }

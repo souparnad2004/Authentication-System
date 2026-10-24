@@ -4,6 +4,9 @@ packages:
   - "tooling/*"
 
 
+allowBuilds:
+  esbuild: true
+
 catalog:
   "@eslint/js": "^10.0.0"
   eslint-config-prettier: "^10.1.0"
@@ -23,8 +26,3 @@ catalog:
   "@commitlint/cli": "^19.7.0"           # Rigid conventional commit standards enforcement
   "@commitlint/config-conventional": "^19.7.0"
   "@types/node": "^24.0.0"             # Typings strictly mapped to modern Node LTS engines
-
-
-onlyBuiltDependencies:
-  - esbuild
-  - sharp

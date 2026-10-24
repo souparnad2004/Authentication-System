@@ -1,5 +1,9 @@
 {
   "name": "authentication_system",
+  "scripts": {
+    "build": "pnpm turbo build",
+    "dev": "pnpm turbo dev"
+  },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
