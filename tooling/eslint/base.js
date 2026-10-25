@@ -43,7 +43,7 @@ export default defineConfig(
         {
           patterns: [
             {
-              group: ['@acme/*/src', '@acme/*/src/*'],
+              group: ['@repo/*/src', '@repo/*/src/*'],
               message: 'Import from the package entry point, not its src folder.',
             },
           ],

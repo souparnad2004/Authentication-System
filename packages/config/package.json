@@ -4,20 +4,24 @@
   "private": true,
   "exports": {
     "./env": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/env/index.d.ts",
+      "import": "./dist/env/index.js"
     }
   },
   "scripts": {
-    "build": "tsup src/env/index.ts --format esm --dts --sourcemap --clean --out-dir dist"
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "zod": "catalog:"
   },
   "devDependencies": {
+    "eslint": "catalog:",
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "tsup": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

@@ -1,28 +1,22 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "tooling/*"
-
+  - 'apps/*'
+  - 'packages/*'
+  - 'tooling/*'
 
 allowBuilds:
   esbuild: true
 
 catalog:
-  "@eslint/js": "^10.0.0"
-  eslint-config-prettier: "^10.1.0"
-  eslint-plugin-turbo: "^2.11.0"
-  globals: "^16.0.0"
-  typescript: "^6.0.0"
-  eslint: "^10.0.0"                      # Leverages the modern directory-based flat config
-  typescript-eslint: "^8.0.0"
-  prettier: "^3.9.0"                     # Lightning fast code formatting
-  turbo: "^2.11.0"                       # High-performance caching and task orchestration
-  tsx: "^4.19.0"                         # Seamless ESM execution for TypeScript files
-  tsup: "^9.0.0"                         # Zero-config bundler powered by esbuild
-  vitest: "^3.0.0"                       # Fast vite-native testing framework
-  zod: "^4.0.0-beta.0"                   # Next-gen schema validation
-  husky: "^9.1.0"                        # Lightweight modern git hooks wrapper
-  lint-staged: "^15.4.0"                 # Efficiently lint only modified files
-  "@commitlint/cli": "^19.7.0"           # Rigid conventional commit standards enforcement
-  "@commitlint/config-conventional": "^19.7.0"
-  "@types/node": "^24.0.0"             # Typings strictly mapped to modern Node LTS engines
+  '@eslint/js': '^10.0.0'
+  eslint-config-prettier: '^10.1.0'
+  eslint-plugin-turbo: '^2.11.0'
+  globals: '^16.0.0'
+  typescript: '^6.0.0'
+  eslint: '^10.0.0' # Leverages the modern directory-based flat config
+  typescript-eslint: '^8.0.0'
+  prettier: '^3.9.0' # Lightning fast code formatting
+  turbo: '^2.11.0' # High-performance caching and task orchestration
+  tsx: '^4.19.0' # Seamless ESM execution for TypeScript files
+  vitest: '^3.0.0' # Fast vite-native testing framework
+  zod: '^4.0.0'
+  '@types/node': '^24.0.0' # Typings strictly mapped to modern Node LTS engines
