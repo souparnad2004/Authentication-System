@@ -12,7 +12,10 @@
     "test": "pnpm turbo test",
     "format": "prettier --write . --ignore-path .prettierignore",
     "format:check": "prettier --check . --ignore-path .prettierignore",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:migrate": "pnpm turbo db:migrate --filter=@repo/api",
+    "db:generate": "pnpm turbo db:generate --filter=@repo/api",
+    "db:studio": "pnpm turbo db:studio --filter=@repo/api"
   },
   "devEngines": {
     "packageManager": {

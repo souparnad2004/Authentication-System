@@ -4,11 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch --env-file-if-exists=.env.local src/index.ts",
+    "dev": "node --env-file-if-exists=.env --import tsx --watch src/index.ts",
     "start": "node dist/index.js",
     "build": "tsc -p tsconfig.json",
     "lint": "eslint .",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "db:migrate": "node --env-file-if-exists=.env ./node_modules/drizzle-kit/bin.cjs migrate",
+    "db:generate": "node --env-file-if-exists=.env ./node_modules/drizzle-kit/bin.cjs generate",
+    "db:studio": "node --env-file-if-exists=.env ./node_modules/drizzle-kit/bin.cjs studio"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
@@ -16,11 +19,13 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "tsx": "catalog:"
+    "tsx": "catalog:",
+    "drizzle-kit": "^0.31.11"
   },
   "dependencies": {
     "@repo/config": "workspace:*",
     "@repo/utils": "workspace:*",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@repo/database": "workspace:*"
   }
 }
