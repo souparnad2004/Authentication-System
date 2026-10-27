@@ -1,12 +1,20 @@
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import * as schema from './schema/index.js';
+import {relations} from "./relations.js";
 
-const databaseUrl = process.env.DATABASE_URL;
-
-if (!databaseUrl) {
-  throw new Error('DATABASE_URL is required to connect to the database.');
+export interface DatabaseOptions {
+  url: string;
+  maxConnections?:number;
 }
 
-const pool = new Pool({ connectionString: databaseUrl });
-export const db = drizzle(pool, { schema, logger: true });
+export function createDatabase({ url, maxConnections = 10}: DatabaseOptions) {
+  const pool = new Pool({ connectionString: url, max: maxConnections });
+  const db = drizzle({client: pool,  relations });
+
+  return {
+    db,
+    close:() => pool.end(),
+  }
+}
+
+export type Database = ReturnType<typeof createDatabase>['db'];
