@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "exports": {
-    "./env": {
+    ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     }

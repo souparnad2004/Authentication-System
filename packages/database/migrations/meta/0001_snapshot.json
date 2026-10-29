@@ -62,9 +62,7 @@
         "user_uuid_unique": {
           "name": "user_uuid_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "uuid"
-          ]
+          "columns": ["uuid"]
         }
       },
       "policies": {},
@@ -128,12 +126,8 @@
           "name": "password_credentials_user_id_user_uuid_fk",
           "tableFrom": "password_credentials",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "uuid"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["uuid"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -149,13 +143,7 @@
     "public.user_status": {
       "name": "user_status",
       "schema": "public",
-      "values": [
-        "active",
-        "inactive",
-        "deleted",
-        "locked",
-        "disabled"
-      ]
+      "values": ["active", "inactive", "deleted", "locked", "disabled"]
     }
   },
   "schemas": {},

@@ -1,5 +1,5 @@
-import { defineRelations } from "drizzle-orm";
-import * as schema from "./schema/index.js";
+import { defineRelations } from 'drizzle-orm';
+import * as schema from './schema/index.js';
 
 export const relations = defineRelations(schema, (r) => ({
   usersTable: {
@@ -24,12 +24,12 @@ export const relations = defineRelations(schema, (r) => ({
     auditLogs: r.many.auditLogsTable({
       from: r.usersTable.id,
       to: r.auditLogsTable.userId,
-      alias: "auditLogSubject",
+      alias: 'auditLogSubject',
     }),
     actedAuditLogs: r.many.auditLogsTable({
       from: r.usersTable.id,
       to: r.auditLogsTable.actorUserId,
-      alias: "auditLogActor",
+      alias: 'auditLogActor',
     }),
   },
 
@@ -134,12 +134,12 @@ export const relations = defineRelations(schema, (r) => ({
     user: r.one.usersTable({
       from: r.auditLogsTable.userId,
       to: r.usersTable.id,
-      alias: "auditLogSubject",
+      alias: 'auditLogSubject',
     }),
     actorUser: r.one.usersTable({
       from: r.auditLogsTable.actorUserId,
       to: r.usersTable.id,
-      alias: "auditLogActor",
+      alias: 'auditLogActor',
     }),
     session: r.one.sessionsTable({
       from: r.auditLogsTable.sessionId,
