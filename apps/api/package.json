@@ -14,18 +14,20 @@
     "db:studio": "node --env-file-if-exists=.env ./node_modules/drizzle-kit/bin.cjs studio"
   },
   "devDependencies": {
-    "@repo/tsconfig": "workspace:*",
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@types/express": "^5.0.6",
     "@types/node": "catalog:",
+    "drizzle-kit": "^0.31.11",
     "eslint": "catalog:",
-    "typescript": "catalog:",
     "tsx": "catalog:",
-    "drizzle-kit": "^0.31.11"
+    "typescript": "catalog:"
   },
   "dependencies": {
     "@repo/config": "workspace:*",
+    "@repo/database": "workspace:*",
     "@repo/utils": "workspace:*",
-    "zod": "catalog:",
-    "@repo/database": "workspace:*"
+    "express": "^5.3.0",
+    "zod": "catalog:"
   }
 }
