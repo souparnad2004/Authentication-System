@@ -4,6 +4,7 @@ packages:
   - 'tooling/*'
 
 allowBuilds:
+  argon2: true
   esbuild: true
 
 catalog:

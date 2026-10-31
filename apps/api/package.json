@@ -25,8 +25,9 @@
   },
   "dependencies": {
     "@repo/config": "workspace:*",
+    "@repo/contracts": "workspace:*",
     "@repo/database": "workspace:*",
-    "@repo/utils": "workspace:*",
+    "argon2": "^0.45.1",
     "drizzle-orm": "1.0.0-rc.5-ab785fc",
     "express": "^5.3.0",
     "zod": "catalog:"

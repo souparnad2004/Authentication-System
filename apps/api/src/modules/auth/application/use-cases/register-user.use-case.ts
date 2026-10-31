@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { RegisterUserDTO } from '../dto/register-user.dto.js';
+import type { RegisterUserRequest } from '@repo/contracts';
 import type { PasswordHasher } from '../ports/password-hasher.port.js';
 import type { UserRepository } from '../../domain/repositories/user.repository.js';
 import {
@@ -9,21 +9,21 @@ import {
 import { User } from '../../domain/entities/user.entity.js';
 import { Email } from '../../domain/value-objects/email.vo.js';
 
-export class RegisterUser {
+export class RegisterUserUseCase {
   constructor(
-    private readonly users: UserRepository,
+    private readonly userRepository: UserRepository,
     private readonly passwordHasher: PasswordHasher,
   ) {}
 
-  async execute(input: RegisterUserDTO) {
+  async execute(input: RegisterUserRequest) {
     const email = Email.create(input.email);
     const username = input.username.trim();
 
-    if (await this.users.existsByEmail(email.value)) {
+    if (await this.userRepository.existsByEmail(email.value)) {
       throw new EmailAlreadyExistsError();
     }
 
-    if (await this.users.existsByUsername(username)) {
+    if (await this.userRepository.existsByUsername(username)) {
       throw new UsernameAlreadyExistsError();
     }
 
@@ -36,7 +36,7 @@ export class RegisterUser {
       passwordHash,
     });
 
-    await this.users.save(user);
+    await this.userRepository.save(user);
 
     return {
       id: user.id,

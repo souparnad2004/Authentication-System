@@ -1,4 +1,5 @@
 import { parseEnv } from '@repo/config/env';
+import { authBasePath, type ApiError } from '@repo/contracts';
 import express from 'express';
 import { ZodError, z } from 'zod';
 import { closeDatabase } from './database.js';
@@ -17,7 +18,7 @@ const env = parseEnv(
 
 const app = express();
 app.use(express.json());
-app.use('/auth', createAuthModule());
+app.use(authBasePath, createAuthModule());
 
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });
@@ -26,17 +27,59 @@ app.get('/health', (_req, res) => {
 app.use(
   (error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     if (error instanceof ZodError || error instanceof InvalidEmailError) {
-      res.status(400).json({ error: 'Invalid registration input' });
+      const issues =
+        error instanceof ZodError
+          ? error.issues.map((issue) => ({
+              field: issue.path.join('.'),
+              message: issue.message,
+            }))
+          : [{ field: 'email', message: error.message }];
+
+      const response = {
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid registration input',
+          issues,
+        },
+      } satisfies ApiError;
+
+      res.status(400).json(response);
       return;
     }
 
-    if (error instanceof EmailAlreadyExistsError || error instanceof UsernameAlreadyExistsError) {
-      res.status(409).json({ error: error.message });
+    if (error instanceof EmailAlreadyExistsError) {
+      const response = {
+        error: {
+          code: 'EMAIL_ALREADY_EXISTS',
+          message: error.message,
+        },
+      } satisfies ApiError;
+
+      res.status(409).json(response);
+      return;
+    }
+
+    if (error instanceof UsernameAlreadyExistsError) {
+      const response = {
+        error: {
+          code: 'USERNAME_ALREADY_EXISTS',
+          message: error.message,
+        },
+      } satisfies ApiError;
+
+      res.status(409).json(response);
       return;
     }
 
     console.error('Unhandled API error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    const response = {
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Internal server error',
+      },
+    } satisfies ApiError;
+
+    res.status(500).json(response);
   },
 );
 
