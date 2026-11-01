@@ -16,4 +16,9 @@ export class AuthController {
 
     res.status(registerUserContract.status).json(response);
   };
+
+  login = async (req: Request, res: Response) => {
+    // Implement login logic here
+    res.status(200).json({ message: 'Login successful' });
+  }
 }
