@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --env-file-if-exists=.env --import tsx --watch src/index.ts",
-    "start": "node dist/index.js",
+    "dev": "node --env-file-if-exists=.env --import tsx --watch src/server.ts",
+    "start": "node dist/server.js",
     "build": "tsc -p tsconfig.json",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
