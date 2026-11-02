@@ -1,5 +1,7 @@
-import { registerUserResponseSchema } from './auth-response.schema.js';
-import { registerUserRequestSchema } from './auth.schema.js';
+import { loginUserResponseSchema } from './responses/login-user.response.schema.js';
+import { registerUserResponseSchema } from './responses/register-user.response.schema.js';
+import { loginUserRequestSchema } from './requests/login-user.request.schema.js';
+import { registerUserRequestSchema } from './requests/register-user.request.schema.js';
 
 export const authBasePath = '/api/auth';
 
@@ -10,4 +12,13 @@ export const registerUserContract = {
   status: 201,
   requestSchema: registerUserRequestSchema,
   responseSchema: registerUserResponseSchema,
+} as const;
+
+export const loginUserContract = {
+  method: 'POST',
+  path: '/login',
+  fullPath: `${authBasePath}/login`,
+  status: 200,
+  requestSchema: loginUserRequestSchema,
+  responseSchema: loginUserResponseSchema,
 } as const;

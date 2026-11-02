@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const userStatus = pgEnum('user_status', [
   'active',
@@ -12,6 +12,7 @@ export const usersTable = pgTable('user', {
   id: uuid('id').defaultRandom().primaryKey(),
   username: text('username').notNull().unique(),
   email: text('email').notNull().unique(),
+  emailVerified: boolean('email_verified').notNull().default(false),
   status: userStatus('user_status').notNull().default('active'),
   lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
   disabledAt: timestamp('disabled_at', { withTimezone: true }),

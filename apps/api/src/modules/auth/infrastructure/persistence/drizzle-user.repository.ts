@@ -30,6 +30,24 @@ export class DrizzleUserRepository implements UserRepository {
     return user !== undefined;
   }
 
+  async findForLoginByEmail(email: string) {
+    const [user] = await this.db
+      .select({
+        id: usersTable.id,
+        username: usersTable.username,
+        email: usersTable.email,
+        emailVerified: usersTable.emailVerified,
+        createdAt: usersTable.createdAt,
+        passwordHash: passwordCredentialsTable.passwordHash,
+      })
+      .from(usersTable)
+      .innerJoin(passwordCredentialsTable, eq(passwordCredentialsTable.userId, usersTable.id))
+      .where(eq(usersTable.email, email))
+      .limit(1);
+
+    return user;
+  }
+
   async save(user: User): Promise<void> {
     try {
       await this.db.transaction(async (tx) => {

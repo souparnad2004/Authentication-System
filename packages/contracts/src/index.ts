@@ -1,13 +1,19 @@
-export { authBasePath, registerUserContract } from './auth/auth.contract.js';
+export { authBasePath, loginUserContract, registerUserContract } from './auth/auth.contract.js';
 export {
   loginResponseSchema,
+  loginUserResponseSchema,
   publicUserSchema,
+} from './auth/responses/login-user.response.schema.js';
+export {
   registerUserResponseSchema,
   registeredUserSchema,
-} from './auth/auth-response.schema.js';
-export { loginSchema, registerUserRequestSchema, uuidSchema } from './auth/auth.schema.js';
+} from './auth/responses/register-user.response.schema.js';
+export { loginSchema, loginUserRequestSchema } from './auth/requests/login-user.request.schema.js';
+export { registerUserRequestSchema } from './auth/requests/register-user.request.schema.js';
+export { uuidSchema } from './common/uuid.schema.js';
 export type {
   LoginRequest,
+  LoginUserRequest,
   LoginResponse,
   PublicUser,
   RegisterUserRequest,

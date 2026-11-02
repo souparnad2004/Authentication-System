@@ -1,9 +1,18 @@
 import type { Request, Response } from 'express';
-import { registerUserContract, type RegisterUserResponse } from '@repo/contracts';
+import {
+  loginUserContract,
+  registerUserContract,
+  type LoginResponse,
+  type RegisterUserResponse,
+} from '@repo/contracts';
+import type { LoginUserUseCase } from '../../application/use-cases/login-user.use-case.js';
 import type { RegisterUserUseCase } from '../../application/use-cases/register-user.use-case.js';
 
 export class AuthController {
-  constructor(private readonly registerUserUseCase: RegisterUserUseCase) {}
+  constructor(
+    private readonly registerUserUseCase: RegisterUserUseCase,
+    private readonly loginUserUseCase: LoginUserUseCase,
+  ) {}
 
   register = async (req: Request, res: Response) => {
     const input = registerUserContract.requestSchema.parse(req.body);
@@ -18,7 +27,9 @@ export class AuthController {
   };
 
   login = async (req: Request, res: Response) => {
-    // Implement login logic here
-    res.status(200).json({ message: 'Login successful' });
-  }
+    const input = loginUserContract.requestSchema.parse(req.body);
+    const response = (await this.loginUserUseCase.execute(input)) satisfies LoginResponse;
+
+    res.status(loginUserContract.status).json(response);
+  };
 }

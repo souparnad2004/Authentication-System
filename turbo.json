@@ -1,7 +1,14 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "globalDependencies": [".node-version"],
-  "globalPassThroughEnv": ["CI", "GITHUB_ACTIONS", "PORT", "DATABASE_URL", "NODE_ENV"],
+  "globalPassThroughEnv": [
+    "CI",
+    "GITHUB_ACTIONS",
+    "PORT",
+    "DATABASE_URL",
+    "JWT_SECRET",
+    "NODE_ENV"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

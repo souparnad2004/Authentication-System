@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { registerUserContract } from '@repo/contracts';
+import { loginUserContract, registerUserContract } from '@repo/contracts';
 import type { AuthController } from './auth.controller.js';
 
 export function createAuthRouter(controller: AuthController) {
   const router = Router();
   router.post(registerUserContract.path, controller.register);
-  router.post("/login", controller.login);
+  router.post(loginUserContract.path, controller.login);
   return router;
 }
