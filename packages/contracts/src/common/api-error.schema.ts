@@ -19,6 +19,8 @@ export const apiErrorCodeSchema = z.enum([
   'MFA_INVALID',
   'OAUTH_FAILED',
   'INTERNAL_SERVER_ERROR',
+  'INVALID_REFRESH_TOKEN',
+  'REFRESH_TOKEN_EXPIRED',
 ]);
 
 export const validationIssueSchema = z.object({

@@ -1,4 +1,9 @@
-export { authBasePath, loginUserContract, registerUserContract } from './auth/auth.contract.js';
+export {
+  authBasePath,
+  loginUserContract,
+  refreshTokenContract,
+  registerUserContract,
+} from './auth/auth.contract.js';
 export {
   loginResponseSchema,
   loginUserResponseSchema,
@@ -8,6 +13,7 @@ export {
   registerUserResponseSchema,
   registeredUserSchema,
 } from './auth/responses/register-user.response.schema.js';
+export { refreshTokenResponseSchema } from './auth/responses/refresh-token.response.schema.js';
 export { loginSchema, loginUserRequestSchema } from './auth/requests/login-user.request.schema.js';
 export { registerUserRequestSchema } from './auth/requests/register-user.request.schema.js';
 export { uuidSchema } from './common/uuid.schema.js';
@@ -19,6 +25,7 @@ export type {
   RegisterUserRequest,
   RegisterUserResponse,
   RegisteredUser,
+  RefreshTokenResponse,
 } from './auth/auth.types.js';
 export {
   apiErrorCodeSchema,

@@ -26,3 +26,30 @@ export interface CreateLoginSession {
   refreshTokenHash: string;
   refreshTokenExpiresAt: Date;
 }
+
+export interface LoginSessionByRefreshToken {
+  refreshTokenId: string;
+  refreshTokenExpiresAt: Date;
+  refreshTokenRevokedAt: Date | null;
+  familyId: string;
+  familyRevokedAt: Date | null;
+  sessionId: string;
+  sessionExpiresAt: Date;
+  sessionRevokedAt: Date | null;
+  userId: string;
+  username: string;
+  email: string;
+  emailVerified: boolean;
+  status: UserStatus;
+  createdAt: Date;
+}
+
+export interface RotateRefreshToken {
+  currentRefreshTokenId: string;
+  sessionId: string;
+  familyId: string;
+  newRefreshTokenId: string;
+  newRefreshTokenHash: string;
+  newRefreshTokenExpiresAt: Date;
+  now: Date;
+}

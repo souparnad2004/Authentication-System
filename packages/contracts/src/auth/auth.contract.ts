@@ -2,6 +2,7 @@ import { loginUserResponseSchema } from './responses/login-user.response.schema.
 import { registerUserResponseSchema } from './responses/register-user.response.schema.js';
 import { loginUserRequestSchema } from './requests/login-user.request.schema.js';
 import { registerUserRequestSchema } from './requests/register-user.request.schema.js';
+import { refreshTokenResponseSchema } from './responses/refresh-token.response.schema.js';
 
 export const authBasePath = '/api/auth';
 
@@ -21,4 +22,12 @@ export const loginUserContract = {
   status: 200,
   requestSchema: loginUserRequestSchema,
   responseSchema: loginUserResponseSchema,
+} as const;
+
+export const refreshTokenContract = {
+  method: 'POST',
+  path: '/refresh-token',
+  fullPath: `${authBasePath}/refresh-token`,
+  status: 200,
+  responseSchema: refreshTokenResponseSchema,
 } as const;
