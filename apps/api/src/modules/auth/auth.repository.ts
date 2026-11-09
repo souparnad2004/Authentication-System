@@ -1,6 +1,7 @@
-import { and, eq, exists, gt, isNull } from 'drizzle-orm';
+import { and, desc, eq, exists, gt, isNull, lt, sql } from 'drizzle-orm';
 import {
   passwordCredentialsTable,
+  passwordResetChallengesTable,
   refreshTokenFamiliesTable,
   refreshTokensTable,
   sessionsTable,
@@ -11,22 +12,33 @@ import { ConflictError } from '../../core/errors/ConflictError.js';
 import type { AuthRepository } from './auth.repository.interface.js';
 import type {
   CreateLoginSession,
+  AuthUserByEmail,
   LoginSessionByRefreshToken,
   NewAuthUser,
+  NewPasswordResetChallenge,
+  PasswordResetChallengeRecord,
   RotateRefreshToken,
+  ResetPassword,
 } from './auth.types.js';
 
 export class DrizzleAuthRepository implements AuthRepository {
   constructor(private readonly db: Database) {}
 
-  async existsByEmail(email: string): Promise<boolean> {
+  async findByEmail(email: string): Promise<AuthUserByEmail | undefined> {
     const [user] = await this.db
-      .select({ id: usersTable.id })
+      .select({
+        id: usersTable.id,
+        username: usersTable.username,
+        email: usersTable.email,
+        emailVerified: usersTable.emailVerified,
+        status: usersTable.status,
+        createdAt: usersTable.createdAt,
+      })
       .from(usersTable)
       .where(eq(usersTable.email, email))
       .limit(1);
 
-    return user !== undefined;
+    return user;
   }
 
   async existsByUsername(username: string): Promise<boolean> {
@@ -212,6 +224,113 @@ export class DrizzleAuthRepository implements AuthRepository {
         tokenHash: input.newRefreshTokenHash,
         expiresAt: input.newRefreshTokenExpiresAt,
       });
+
+      return true;
+    });
+  }
+
+  async createPasswordResetChallenge(input: NewPasswordResetChallenge): Promise<void> {
+    await this.db.transaction(async (tx) => {
+      await tx
+        .update(passwordResetChallengesTable)
+        .set({ consumedAt: new Date() })
+        .where(
+          and(
+            eq(passwordResetChallengesTable.userId, input.userId),
+            isNull(passwordResetChallengesTable.consumedAt),
+          ),
+        );
+
+      await tx.insert(passwordResetChallengesTable).values(input);
+    });
+  }
+
+  async findActivePasswordResetChallenge(
+    userId: string,
+    now: Date,
+  ): Promise<PasswordResetChallengeRecord | undefined> {
+    const [challenge] = await this.db
+      .select({
+        id: passwordResetChallengesTable.id,
+        otpHash: passwordResetChallengesTable.otpHash,
+        expiresAt: passwordResetChallengesTable.expiresAt,
+        attempts: passwordResetChallengesTable.attempts,
+      })
+      .from(passwordResetChallengesTable)
+      .where(
+        and(
+          eq(passwordResetChallengesTable.userId, userId),
+          isNull(passwordResetChallengesTable.consumedAt),
+          gt(passwordResetChallengesTable.expiresAt, now),
+        ),
+      )
+      .orderBy(desc(passwordResetChallengesTable.createdAt))
+      .limit(1);
+
+    return challenge;
+  }
+
+  async incrementPasswordResetAttempts(
+    challengeId: string,
+    now: Date,
+    maxAttempts: number,
+  ): Promise<boolean> {
+    const [challenge] = await this.db
+      .update(passwordResetChallengesTable)
+      .set({ attempts: sql`${passwordResetChallengesTable.attempts} + 1` })
+      .where(
+        and(
+          eq(passwordResetChallengesTable.id, challengeId),
+          isNull(passwordResetChallengesTable.consumedAt),
+          gt(passwordResetChallengesTable.expiresAt, now),
+          lt(passwordResetChallengesTable.attempts, maxAttempts),
+        ),
+      )
+      .returning({ id: passwordResetChallengesTable.id });
+
+    return challenge !== undefined;
+  }
+
+  async resetPassword(input: ResetPassword): Promise<boolean> {
+    return this.db.transaction(async (tx) => {
+      const [challenge] = await tx
+        .update(passwordResetChallengesTable)
+        .set({ consumedAt: input.now })
+        .where(
+          and(
+            eq(passwordResetChallengesTable.id, input.challengeId),
+            eq(passwordResetChallengesTable.userId, input.userId),
+            isNull(passwordResetChallengesTable.consumedAt),
+            gt(passwordResetChallengesTable.expiresAt, input.now),
+            lt(passwordResetChallengesTable.attempts, input.maxAttempts),
+          ),
+        )
+        .returning({ id: passwordResetChallengesTable.id });
+
+      if (!challenge) {
+        return false;
+      }
+
+      const [credential] = await tx
+        .update(passwordCredentialsTable)
+        .set({
+          passwordHash: input.passwordHash,
+          passwordChangedAt: input.now,
+          passwordVersion: sql`${passwordCredentialsTable.passwordVersion} + 1`,
+        })
+        .where(eq(passwordCredentialsTable.userId, input.userId))
+        .returning({ userId: passwordCredentialsTable.userId });
+
+      if (!credential) {
+        throw new Error('Password credential not found during password reset');
+      }
+
+      await tx
+        .update(sessionsTable)
+        .set({ revokedAt: input.now })
+        .where(
+          and(eq(sessionsTable.userId, input.userId), isNull(sessionsTable.revokedAt)),
+        );
 
       return true;
     });

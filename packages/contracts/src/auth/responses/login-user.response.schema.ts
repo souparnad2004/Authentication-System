@@ -4,6 +4,7 @@ export const publicUserSchema = z.object({
   id: z.uuid(),
   username: z.string(),
   email: z.email(),
+  status: z.enum(['active', 'inactive', 'deleted', 'locked', 'disabled']),
   emailVerified: z.boolean(),
   createdAt: z.iso.datetime(),
 });

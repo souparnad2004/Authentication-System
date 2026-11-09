@@ -6,6 +6,11 @@ export {
 } from './passwordCredential.schema.js';
 export { sessionsTable, type Session, type NewSession } from './session.schema.js';
 export {
+  passwordResetChallengesTable,
+  type PasswordResetChallenge,
+  type NewPasswordResetChallenge,
+} from './passwordResetChallenge.schema.js';
+export {
   refreshTokensTable,
   refreshTokenFamiliesTable,
   type RefreshToken,

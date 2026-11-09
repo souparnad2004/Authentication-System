@@ -3,6 +3,8 @@ import { registerUserResponseSchema } from './responses/register-user.response.s
 import { loginUserRequestSchema } from './requests/login-user.request.schema.js';
 import { registerUserRequestSchema } from './requests/register-user.request.schema.js';
 import { refreshTokenResponseSchema } from './responses/refresh-token.response.schema.js';
+import { forgetPasswordRequestSchema } from './requests/forget-password.request.schema.js';
+import { resetPasswordRequestSchema } from './requests/reset-password.request.schema.js';
 
 export const authBasePath = '/api/auth';
 
@@ -30,4 +32,20 @@ export const refreshTokenContract = {
   fullPath: `${authBasePath}/refresh-token`,
   status: 200,
   responseSchema: refreshTokenResponseSchema,
+} as const;
+
+export const forgetPasswordContract = {
+  method: 'POST',
+  path: '/forget-password',
+  fullPath: `${authBasePath}/forget-password`,
+  status: 202,
+  requestSchema: forgetPasswordRequestSchema,
+} as const;
+
+export const resetPasswordContract = {
+  method: 'POST',
+  path: '/reset-password',
+  fullPath: `${authBasePath}/reset-password`,
+  status: 200,
+  requestSchema: resetPasswordRequestSchema,
 } as const;

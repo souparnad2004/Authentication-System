@@ -1,13 +1,17 @@
 import type { Request, Response } from 'express';
 import {
   loginUserContract,
+  forgetPasswordContract,
   refreshTokenContract,
   registerUserContract,
+  resetPasswordContract,
   type LoginUserRequest,
   type LoginResponse,
   type RegisterUserRequest,
   type RegisterUserResponse,
   type RefreshTokenResponse,
+  type ForgetPasswordRequest,
+  type ResetPasswordRequest,
 } from '@repo/contracts';
 import { UnauthorizedError } from '../../core/errors/UnauthorizedError.js';
 import type { AuthService } from './auth.service.js';
@@ -62,5 +66,23 @@ export class AuthController {
     const { refreshToken: newRefreshToken, refreshTokenExpiresAt, ...response } = result;
     res.cookie('refreshToken', newRefreshToken, refreshCookieOptions(refreshTokenExpiresAt));
     res.status(refreshTokenContract.status).json(response satisfies RefreshTokenResponse);
+  };
+
+  forgetPassword = async (
+    req: Request<Record<string, never>, unknown, ForgetPasswordRequest>,
+    res: Response,
+  ): Promise<void> => {
+    const input = req.body;
+    const result = await this.authService.forgetPassword(input);
+    res.status(forgetPasswordContract.status).json(result);
+  };
+
+  resetPassword = async (
+    req: Request<Record<string, never>, unknown, ResetPasswordRequest>,
+    res: Response,
+  ): Promise<void> => {
+    const input = req.body;
+    const result = await this.authService.resetPassword(input);
+    res.status(resetPasswordContract.status).json(result);
   };
 }

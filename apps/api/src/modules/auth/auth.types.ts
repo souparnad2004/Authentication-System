@@ -10,6 +10,15 @@ export interface LoginUserRecord {
   passwordHash: string;
 }
 
+export interface AuthUserByEmail {
+  id: string;
+  username: string;
+  email: string;
+  emailVerified: boolean;
+  status: UserStatus;
+  createdAt: Date;
+}
+
 export interface NewAuthUser {
   id: string;
   username: string;
@@ -52,4 +61,25 @@ export interface RotateRefreshToken {
   newRefreshTokenHash: string;
   newRefreshTokenExpiresAt: Date;
   now: Date;
+}
+
+export interface NewPasswordResetChallenge {
+  userId: string;
+  otpHash: string;
+  expiresAt: Date;
+}
+
+export interface PasswordResetChallengeRecord {
+  id: string;
+  otpHash: string;
+  expiresAt: Date;
+  attempts: number;
+}
+
+export interface ResetPassword {
+  challengeId: string;
+  userId: string;
+  passwordHash: string;
+  now: Date;
+  maxAttempts: number;
 }

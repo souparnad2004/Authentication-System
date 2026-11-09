@@ -15,6 +15,13 @@
       "when": 1793004856317,
       "tag": "0001_normal_lucky_pierre",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794243452730,
+      "tag": "0002_password_reset_challenges",
+      "breakpoints": true
     }
   ]
 }

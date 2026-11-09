@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { loginUserContract, refreshTokenContract, registerUserContract } from '@repo/contracts';
+import {
+  forgetPasswordContract,
+  loginUserContract,
+  refreshTokenContract,
+  registerUserContract,
+  resetPasswordContract,
+} from '@repo/contracts';
 import { validateBody } from '../../core/middleware/validateBody.js';
 import type { AuthController } from './auth.controller.js';
 
@@ -17,5 +23,16 @@ export function createAuthRouter(controller: AuthController) {
     controller.login,
   );
   router.post(refreshTokenContract.path, controller.refresh);
+
+  router.post(
+    forgetPasswordContract.path,
+    validateBody(forgetPasswordContract.requestSchema),
+    controller.forgetPassword,
+  );
+  router.post(
+    resetPasswordContract.path,
+    validateBody(resetPasswordContract.requestSchema),
+    controller.resetPassword,
+  );
   return router;
 }

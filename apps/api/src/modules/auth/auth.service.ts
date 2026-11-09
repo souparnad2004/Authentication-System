@@ -1,5 +1,10 @@
-import { createHash, randomBytes, randomUUID } from 'node:crypto';
-import type { LoginUserRequest, RegisterUserRequest } from '@repo/contracts';
+import { createHash, randomBytes, randomInt, randomUUID } from 'node:crypto';
+import type {
+  ForgetPasswordRequest,
+  LoginUserRequest,
+  RegisterUserRequest,
+  ResetPasswordRequest,
+} from '@repo/contracts';
 import { ConflictError } from '../../core/errors/ConflictError.js';
 import { ForbiddenError } from '../../core/errors/ForbiddenError.js';
 import { UnauthorizedError } from '../../core/errors/UnauthorizedError.js';
@@ -9,6 +14,13 @@ import type { AuthRepository } from './auth.repository.interface.js';
 
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const PASSWORD_RESET_OTP_TTL_MS = 10 * 60 * 1000;
+const PASSWORD_RESET_MAX_ATTEMPTS = 5;
+const INVALID_RESET_CODE_MESSAGE = 'Invalid or expired password reset code';
+
+function generateOtp(): string {
+  return randomInt(0, 1_000_000).toString().padStart(6, '0');
+}
 
 export class AuthService {
   constructor(
@@ -21,7 +33,7 @@ export class AuthService {
     const email = input.email.trim().toLowerCase();
     const username = input.username.trim();
 
-    if (await this.repository.existsByEmail(email)) {
+    if (await this.repository.findByEmail(email)) {
       throw new ConflictError('Email already registered', 'EMAIL_ALREADY_EXISTS');
     }
 
@@ -85,6 +97,7 @@ export class AuthService {
         id: user.id,
         username: user.username,
         email: user.email,
+        status: user.status,
         emailVerified: user.emailVerified,
         createdAt: user.createdAt.toISOString(),
       },
@@ -151,5 +164,68 @@ export class AuthService {
       tokenType: 'Bearer' as const,
       expiresIn: ACCESS_TOKEN_TTL_SECONDS,
     };
+  }
+
+  async forgetPassword(input: ForgetPasswordRequest) {
+    const email = input.email.trim().toLowerCase();
+    const user = await this.repository.findByEmail(email);
+
+    if (user?.status === 'active' && user.emailVerified) {
+      const otp = generateOtp();
+      const otpHash = await this.passwordHasher.hash(otp);
+
+      await this.repository.createPasswordResetChallenge({
+        userId: user.id,
+        otpHash,
+        expiresAt: new Date(Date.now() + PASSWORD_RESET_OTP_TTL_MS),
+      });
+
+      // TODO: Send the OTP to the user through the email service.
+    }
+
+    return {
+      message:
+        'If an eligible account exists, reset instructions will be available once email delivery is configured.',
+    };
+  }
+
+  async resetPassword(input: ResetPasswordRequest) {
+    const email = input.email.trim().toLowerCase();
+    const user = await this.repository.findByEmail(email);
+
+    if (!user || user.status !== 'active' || !user.emailVerified) {
+      throw new UnauthorizedError(INVALID_RESET_CODE_MESSAGE, 'INVALID_OR_EXPIRED_CODE');
+    }
+
+    const now = new Date();
+    const challenge = await this.repository.findActivePasswordResetChallenge(user.id, now);
+
+    if (!challenge || challenge.attempts >= PASSWORD_RESET_MAX_ATTEMPTS) {
+      throw new UnauthorizedError(INVALID_RESET_CODE_MESSAGE, 'INVALID_OR_EXPIRED_CODE');
+    }
+
+    if (!(await this.passwordHasher.verify(input.otp, challenge.otpHash))) {
+      await this.repository.incrementPasswordResetAttempts(
+        challenge.id,
+        now,
+        PASSWORD_RESET_MAX_ATTEMPTS,
+      );
+      throw new UnauthorizedError(INVALID_RESET_CODE_MESSAGE, 'INVALID_OR_EXPIRED_CODE');
+    }
+
+    const passwordHash = await this.passwordHasher.hash(input.password);
+    const reset = await this.repository.resetPassword({
+      challengeId: challenge.id,
+      userId: user.id,
+      passwordHash,
+      now,
+      maxAttempts: PASSWORD_RESET_MAX_ATTEMPTS,
+    });
+
+    if (!reset) {
+      throw new UnauthorizedError(INVALID_RESET_CODE_MESSAGE, 'INVALID_OR_EXPIRED_CODE');
+    }
+
+    return { message: 'Password reset successful' };
   }
 }
