@@ -7,7 +7,10 @@
     "PORT",
     "DATABASE_URL",
     "JWT_SECRET",
-    "NODE_ENV"
+    "NODE_ENV",
+    "REDIS_HOST",
+    "REDIS_PORT",
+    "REDIS_PASSWORD"
   ],
   "tasks": {
     "build": {

@@ -23,7 +23,6 @@ export function createAuthRouter(controller: AuthController) {
     controller.login,
   );
   router.post(refreshTokenContract.path, controller.refresh);
-
   router.post(
     forgetPasswordContract.path,
     validateBody(forgetPasswordContract.requestSchema),
@@ -34,5 +33,6 @@ export function createAuthRouter(controller: AuthController) {
     validateBody(resetPasswordContract.requestSchema),
     controller.resetPassword,
   );
+
   return router;
 }

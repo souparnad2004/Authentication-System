@@ -63,23 +63,16 @@ export interface RotateRefreshToken {
   now: Date;
 }
 
-export interface NewPasswordResetChallenge {
-  userId: string;
-  otpHash: string;
-  expiresAt: Date;
-}
-
 export interface PasswordResetChallengeRecord {
   id: string;
+  userId: string;
   otpHash: string;
   expiresAt: Date;
   attempts: number;
 }
 
 export interface ResetPassword {
-  challengeId: string;
   userId: string;
   passwordHash: string;
   now: Date;
-  maxAttempts: number;
 }

@@ -1,38 +1,38 @@
 import type { Request, Response } from 'express';
 import {
-  loginUserContract,
   forgetPasswordContract,
+  loginUserContract,
   refreshTokenContract,
   registerUserContract,
   resetPasswordContract,
-  type LoginUserRequest,
+  type ForgetPasswordRequest,
   type LoginResponse,
+  type LoginUserRequest,
+  type RefreshTokenResponse,
   type RegisterUserRequest,
   type RegisterUserResponse,
-  type RefreshTokenResponse,
-  type ForgetPasswordRequest,
   type ResetPasswordRequest,
 } from '@repo/contracts';
 import { UnauthorizedError } from '../../core/errors/UnauthorizedError.js';
-import type { AuthService } from './auth.service.js';
-
-const refreshCookieOptions = (expiresAt: Date) => ({
-  httpOnly: true,
-  sameSite: 'lax' as const,
-  secure: process.env.NODE_ENV === 'production',
-  path: refreshTokenContract.fullPath,
-  expires: expiresAt,
-});
+import { refreshCookieOptions } from './shared/refresh-cookie.js';
+import type { LoginService } from './login/login.service.js';
+import type { PasswordResetService } from './password-reset/password-reset.service.js';
+import type { RegisterService } from './register/register.service.js';
+import type { SessionService } from './session/session.service.js';
 
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly registerService: RegisterService,
+    private readonly loginService: LoginService,
+    private readonly sessionService: SessionService,
+    private readonly passwordResetService: PasswordResetService,
+  ) {}
 
   register = async (
     req: Request<Record<string, never>, unknown, RegisterUserRequest>,
     res: Response,
   ): Promise<void> => {
-    const input = req.body;
-    const result = await this.authService.register(input);
+    const result = await this.registerService.register(req.body);
     const response = {
       message: 'Registration successful',
       data: result,
@@ -45,11 +45,9 @@ export class AuthController {
     req: Request<Record<string, never>, unknown, LoginUserRequest>,
     res: Response,
   ): Promise<void> => {
-    const input = req.body;
-    const result = await this.authService.login(input);
+    const result = await this.loginService.login(req.body);
     const { refreshTokenExpiresAt, ...response } = result;
     res.cookie('refreshToken', result.refreshToken, refreshCookieOptions(refreshTokenExpiresAt));
-
     res.status(loginUserContract.status).json(response satisfies LoginResponse);
   };
 
@@ -62,7 +60,7 @@ export class AuthController {
       throw new UnauthorizedError('Refresh token is required', 'INVALID_REFRESH_TOKEN');
     }
 
-    const result = await this.authService.refresh(refreshToken);
+    const result = await this.sessionService.refresh(refreshToken);
     const { refreshToken: newRefreshToken, refreshTokenExpiresAt, ...response } = result;
     res.cookie('refreshToken', newRefreshToken, refreshCookieOptions(refreshTokenExpiresAt));
     res.status(refreshTokenContract.status).json(response satisfies RefreshTokenResponse);
@@ -72,8 +70,7 @@ export class AuthController {
     req: Request<Record<string, never>, unknown, ForgetPasswordRequest>,
     res: Response,
   ): Promise<void> => {
-    const input = req.body;
-    const result = await this.authService.forgetPassword(input);
+    const result = await this.passwordResetService.requestReset(req.body);
     res.status(forgetPasswordContract.status).json(result);
   };
 
@@ -81,8 +78,7 @@ export class AuthController {
     req: Request<Record<string, never>, unknown, ResetPasswordRequest>,
     res: Response,
   ): Promise<void> => {
-    const input = req.body;
-    const result = await this.authService.resetPassword(input);
+    const result = await this.passwordResetService.resetPassword(req.body);
     res.status(resetPasswordContract.status).json(result);
   };
 }
